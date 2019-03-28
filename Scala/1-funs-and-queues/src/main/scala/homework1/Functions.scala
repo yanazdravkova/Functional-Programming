@@ -1,16 +1,14 @@
 package homework1
 import scala.math.pow
+import scala.annotation.tailrec
 
 object Functions {
   
   def fromDigits(digits: List[Int], radix: Int = 10): Int = 
   {
-     def fromDigitsAcc(digits: List[Int], radix: Int, acc: Int): Int = 
+     @tailrec def fromDigitsAcc(digits: List[Int], radix: Int, acc: Int): Int = 
      {
-       if(digits.isEmpty)
-       {
-         acc
-       }
+       if(digits.isEmpty) acc
        else
        {
          val step = calculateStep(digits, radix)
@@ -40,19 +38,24 @@ object Functions {
   
   def charToInt(c: Char): Int = 
   {
-    if(c.isDigit)
-    {
-      c.toInt - 48
-    }
-    else
-    {
-      c - 55
-    }
+    if(c.isDigit) c.toInt - 48
+    else c- 55
   }
   
-  def zipMap(a: List[Int], b: List[Int], f: (Int, Int) => Int): List[Int] = ???
+  def zipMap(a: List[Int], b: List[Int], f: (Int, Int) => Int): List[Int] = 
+  {
+    @tailrec def zipMapAcc(a: List[Int], b: List[Int], f: (Int, Int) => Int, acc: List[Int]): List[Int] = 
+    {
+      if(a.isEmpty || b.isEmpty) acc.reverse 
+      else zipMapAcc(a.tail, b.tail, f, f(a.head, b.head)::acc)
+    }
+    
+    zipMapAcc(a, b, f, List.empty)
+  }
 
   def countCoinChangeVariants(denominations: List[Int], change: Int): Int = ???
 
   def bfsTraversal(start: Int, end: Int, neighbours: Int => List[Int]): Queue = ???
+	
 }
+
