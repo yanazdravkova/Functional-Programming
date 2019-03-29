@@ -15,7 +15,6 @@ object Functions {
          fromDigitsAcc(digits.tail, radix, acc + step)
        }
      }
-     
      fromDigitsAcc(digits, radix, 0)
   }
   
@@ -27,12 +26,8 @@ object Functions {
   def parseInteger(integer: String, radix: Int = 10): Int = 
   {
     val integerAbsoluteValueAsString = if(integer.head == '-') integer.substring(1) else integer
-    
-    val digitsAsChars: List[Char] = integerAbsoluteValueAsString.toList
-    val digits: List[Int] = digitsAsChars.map(x => charToInt(x))
-    
+    val digits: List[Int] = integerAbsoluteValueAsString.toList.map(x => charToInt(x))
     val fromDigitsAbsolute = fromDigits(digits, radix)
-    
     if(integer.head == '-') -fromDigitsAbsolute else fromDigitsAbsolute
   }
   
@@ -49,11 +44,16 @@ object Functions {
       if(a.isEmpty || b.isEmpty) acc.reverse 
       else zipMapAcc(a.tail, b.tail, f, f(a.head, b.head)::acc)
     }
-    
     zipMapAcc(a, b, f, List.empty)
   }
 
-  def countCoinChangeVariants(denominations: List[Int], change: Int): Int = ???
+  def countCoinChangeVariants(denominations: List[Int], change: Int): Int = 
+  {
+     if(change < 0) 0
+     else if(denominations.isEmpty && change == 0) 1
+     else if(denominations.isEmpty) 0
+     else countCoinChangeVariants(denominations.tail, change) + countCoinChangeVariants(denominations, change - denominations.head)
+  }
 
   def bfsTraversal(start: Int, end: Int, neighbours: Int => List[Int]): Queue = ???
 	
