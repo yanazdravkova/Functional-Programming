@@ -6,4 +6,12 @@ class ChainTest extends FlatSpec with Matchers {
   "++" should "append two chains" in {
     (Chain(1, 2) ++ Chain(3, 4)) shouldEqual Chain(1, 2, 3, 4)
   }
+  
+  "isEmpty" should "recognize as non empty chain" in {
+    (Chain(1, 2).isEmpty shouldBe false)
+  }
+  
+  it should "recognize as empty chain" in {
+    (Chain(1).isEmpty shouldBe true)
+  }
 }

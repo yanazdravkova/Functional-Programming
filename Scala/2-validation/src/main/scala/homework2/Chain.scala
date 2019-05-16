@@ -4,7 +4,12 @@ sealed trait Chain[+A] {
   def head: A
   def tail: Option[Chain[A]]
 
-  def isEmpty: Boolean = ???
+  def isEmpty: Boolean = {
+    this.tail match {
+      case None => true
+      case _ => false
+    }
+  }
 
   def +:[B >: A](front: B): Chain[B] = ???
 
@@ -58,7 +63,12 @@ case class Append[+A](left: Chain[A], right: Chain[A]) extends Chain[A] {
 }
 
 object Chain {
-  def apply[A](head: A, rest: A*): Chain[A] = ???
+  def apply[A](head: A, rest: A*): Chain[A] = {
+    rest match {
+      case Seq() => new Singleton(head)
+      case _ => Append(new Singleton(head), Chain(rest.head, rest.tail: _*))
+    }
+  }
 
   // Allows Chain to be used in pattern matching
   def unapplySeq[A](chain: Chain[A]): Option[Seq[A]] = Some(chain.toList)
