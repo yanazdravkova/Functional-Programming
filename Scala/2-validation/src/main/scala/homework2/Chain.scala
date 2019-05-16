@@ -51,7 +51,11 @@ sealed trait Chain[+A] {
   def min[B >: A](implicit order: Ordering[B]): B = ???
   def max[B >: A](implicit order: Ordering[B]): B = ???
 
-  def listify: Chain[A] = ???
+  def listify: Chain[A] = this match {
+    case Append(Singleton(_), rest) => this //nothing    
+    case Append(a: Append[A], right) => Append(Singleton(a.head), Append(a.tail.getOrElse(Singleton(a.head)), right)) //we know left is not Singleton 
+    case _ => this
+  }
 }
 
 case class Singleton[+A](head: A) extends Chain[A] {
