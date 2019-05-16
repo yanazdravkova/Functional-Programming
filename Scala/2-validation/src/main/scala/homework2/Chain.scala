@@ -4,16 +4,19 @@ sealed trait Chain[+A] {
   def head: A
   def tail: Option[Chain[A]]
 
-  def isEmpty: Boolean = {
-    (head, tail) match {
-      case (null, None) => true
-      case _ => false
+  def isEmpty: Boolean = { (head, tail) match {
+      case (_, _) => false
+      case _ => true //not sure
     }
   }
 
-  def +:[B >: A](front: B): Chain[B] = ???
+  def +:[B >: A](front: B): Chain[B] = {
+    new Append(Singleton(front), this)
+  }
 
-  def :+[B >: A](back: B): Chain[B] = ???
+  def :+[B >: A](back: B): Chain[B] = {
+    new Append(this, Singleton(back))
+  }
 
   def ++[B >: A](right: Chain[B]): Chain[B] = ???
 
@@ -32,7 +35,7 @@ sealed trait Chain[+A] {
   def foreach(f: A => Unit): Unit = foldLeft(())((_, next) => f(next))
 
   override def equals(that: Any): Boolean = that match {
-    case c: Chain[_] => ???
+    case c: Chain[_] => c.head.hashCode == head && tail.orElse(None).equals(c.tail)
     case _ => false
   }
 
