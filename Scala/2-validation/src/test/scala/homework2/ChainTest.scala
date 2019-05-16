@@ -11,7 +11,5 @@ class ChainTest extends FlatSpec with Matchers {
     (Chain(1, 2).isEmpty shouldBe false)
   }
   
-  it should "recognize as empty chain" in {
-    (Chain(1).isEmpty shouldBe true)
   }
 }

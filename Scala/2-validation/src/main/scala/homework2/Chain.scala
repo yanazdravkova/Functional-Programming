@@ -5,8 +5,8 @@ sealed trait Chain[+A] {
   def tail: Option[Chain[A]]
 
   def isEmpty: Boolean = {
-    this.tail match {
-      case None => true
+    (head, tail) match {
+      case (null, None) => true
       case _ => false
     }
   }
