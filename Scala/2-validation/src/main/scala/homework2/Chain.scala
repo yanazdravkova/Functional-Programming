@@ -4,21 +4,18 @@ sealed trait Chain[+A] {
   def head: A
   def tail: Option[Chain[A]]
 
-  def isEmpty: Boolean = { (head, tail) match {
-      case (_, _) => false
-      case _ => true //not sure
-    }
-  }
+  def isEmpty: Boolean = false
 
   def +:[B >: A](front: B): Chain[B] = {
-    new Append(Singleton(front), this)
+    Append(Singleton(front), this)
   }
 
-  def :+[B >: A](back: B): Chain[B] = {
-    new Append(this, Singleton(back))
-  }
+  def :+[B >: A](back: B): Chain[B] = Append(this, Singleton(back))
 
-  def ++[B >: A](right: Chain[B]): Chain[B] = ???
+  def ++[B >: A](right: Chain[B]): Chain[B] = this match {
+    case Singleton(_) => Append(this, right)
+    case Append(Singleton(first), rest) => Append(Singleton(first), Append(rest, right))
+  }
 
   def foldLeft[B](initial: B)(f: (B, A) => B): B = ???
 
@@ -52,9 +49,11 @@ sealed trait Chain[+A] {
   def max[B >: A](implicit order: Ordering[B]): B = ???
 
   def listify: Chain[A] = this match {
-    case Append(Singleton(_), rest) => this //nothing    
-    case Append(a: Append[A], right) => Append(Singleton(a.head), Append(a.tail.getOrElse(Singleton(a.head)), right)) //we know left is not Singleton 
-    case _ => this
+    case Singleton(first) => this
+    case Append(Singleton(first), right) => Append(Singleton(first), right.listify)
+    case Append(leftAppend, rightChain) => Append(Singleton(leftAppend.head), Append(leftAppend.tail.get, rightChain)).listify
+    //case Append(leftAppend, rightChain) => Append(Singleton(leftAppend.head), Append(leftAppend.tail.getOrElse(Singleton(leftAppend.head)), rightChain).listify)
+    //there is always value leftAppend.tail, otherwise leftAppend would be singleton and handled with the previous case 
   }
 }
 

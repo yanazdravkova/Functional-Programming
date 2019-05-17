@@ -28,11 +28,31 @@ class ChainTest extends FlatSpec with Matchers {
     (Chain(1, 2).:+(3) shouldBe Chain(1, 2, 3)) 
   }
    
-   "append" should "create an Append with left side Append" in {
-     (Append(Append(Singleton(1), Singleton(2)), Append(Singleton(3), Singleton(4))).head shouldBe Singleton(1))
+   "listify" should "OK make first element of an append be a singleton" in {
+     (Append(Append(Singleton(1), Singleton(2)), Append(Singleton(3), Singleton(4))).listify shouldBe Append(Singleton(1), Append(Singleton(2), Append(Singleton(3), Singleton(4)))))
    }
    
-   "listify" should "make first element of an append be a singleton" in {
-     Append(Append(Singleton(1), Singleton(2)), Append(Singleton(3), Singleton(4))).listify shouldBe Append(Singleton(1), Append(Singleton(2), Append(Singleton(3), Singleton(4))))
+   it should "OK apply listify on a Singleton" in {
+     (Singleton(1).listify shouldBe Singleton(1))
    }
+   
+   it should "OK apply listify on Append of two Singletons" in {
+     (Append(Singleton(1), Singleton(2)).listify shouldBe Append(Singleton(1), Singleton(2)))
+   }
+   
+   it should "OK 2app" in {
+     (Append(Append(Singleton(1), Singleton(2)), Singleton(3)).listify shouldBe Append(Singleton(1), Append(Singleton(2), Singleton(3))))
+   }
+   
+   it should "OK 2 leveled listify" in {
+     (Append(Append(Singleton(1), Append(Singleton(2), Singleton(3))), Singleton(4)).listify shouldBe 
+     Append(Singleton(1), Append(Singleton(2), Append(Singleton(3), Singleton(4)))))
+   }
+   
+      it should "NO 1 leveled listify" in {
+     (Append(Append(Append(Singleton(1), Append(Singleton(2), Singleton(3))), Singleton(4)), Singleton(5)).listify shouldBe 
+     Append(Singleton(1), Append(Append(Append(Singleton(2), Singleton(3)), Singleton(4)), Singleton(5))))
+   }
+      
+      
 }
