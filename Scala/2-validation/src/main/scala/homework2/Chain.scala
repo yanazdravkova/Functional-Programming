@@ -10,11 +10,7 @@ sealed trait Chain[+A] {
 
   def :+[B >: A](back: B): Chain[B] = Append(this, Singleton(back))
 
-  def ++[B >: A](right: Chain[B]): Chain[B] = this.listify match {
-    case Singleton(_) => Append(this, right)
-    case Append(Singleton(first), rest) => Append(Singleton(first), Append(rest, right))
-    case _ => sys.error("Unexpected listify format")
-  }
+  def ++[B >: A](right: Chain[B]): Chain[B] = Append(this, right)
 
   def foldLeft[B](initial: B)(f: (B, A) => B): B = this.listify match {
     case Singleton(first) => f(initial, first)
@@ -34,7 +30,7 @@ sealed trait Chain[+A] {
     case _ => sys.error("Unexpected listify format")
   }
 
-  def flatMap[B](f: A => Chain[B]): Chain[B] = ???
+  def flatMap[B](f: A => Chain[B]): Chain[B] = this.map(f).reduceLeft(_ ++ _)
 
   def foreach(f: A => Unit): Unit = foldLeft(())((_, next) => f(next))
 
@@ -52,8 +48,8 @@ sealed trait Chain[+A] {
   def toList: List[A] = foldLeft(List.empty[A])((acc, next) => next :: acc).reverse
   def toSet[B >: A]: Set[B] = foldLeft(Set.empty[B])((acc, next) => acc + next)
 
-  def min[B >: A](implicit order: Ordering[B]): B = ???
-  def max[B >: A](implicit order: Ordering[B]): B = ???
+  def min[B >: A](implicit order: Ordering[B]): B = this.reduceLeft(order.min)
+  def max[B >: A](implicit order: Ordering[B]): B = this.reduceLeft(order.max)
 
   def listify: Chain[A] = this match {
     case Singleton(first) => this
