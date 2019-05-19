@@ -6,18 +6,21 @@ sealed trait Chain[+A] {
 
   def isEmpty: Boolean = false
 
-  def +:[B >: A](front: B): Chain[B] = {
-    Append(Singleton(front), this)
-  }
+  def +:[B >: A](front: B): Chain[B] = Append(Singleton(front), this)
 
   def :+[B >: A](back: B): Chain[B] = Append(this, Singleton(back))
 
-  def ++[B >: A](right: Chain[B]): Chain[B] = this match {
+  def ++[B >: A](right: Chain[B]): Chain[B] = this.listify match {
     case Singleton(_) => Append(this, right)
     case Append(Singleton(first), rest) => Append(Singleton(first), Append(rest, right))
+    case _ => sys.error("Unexpected listify format")
   }
 
-  def foldLeft[B](initial: B)(f: (B, A) => B): B = ???
+  def foldLeft[B](initial: B)(f: (B, A) => B): B = this.listify match {
+    case Singleton(first) => f(initial, first)
+    case Append(Singleton(first), rest) => rest.foldLeft(f(initial, first))(f)
+    case _ => sys.error("Unexpected listify format")
+  }
 
   def reduceLeft[B >: A](f: (B, A) => B): B = this.listify match {
     case Singleton(first) => first
@@ -25,7 +28,11 @@ sealed trait Chain[+A] {
     case _ => sys.error("Unexpected listify format")
   }
 
-  def map[B](f: A => B): Chain[B] = ???
+  def map[B](f: A => B): Chain[B] = this.listify match {
+    case Singleton(first) => Singleton(f(first))
+    case Append(Singleton(first), rest) => Append(Singleton(f(first)), rest.map(f))
+    case _ => sys.error("Unexpected listify format")
+  }
 
   def flatMap[B](f: A => Chain[B]): Chain[B] = ???
 
@@ -51,9 +58,7 @@ sealed trait Chain[+A] {
   def listify: Chain[A] = this match {
     case Singleton(first) => this
     case Append(Singleton(first), right) => Append(Singleton(first), right.listify)
-    case Append(leftAppend, rightChain) => Append(Singleton(leftAppend.head), Append(leftAppend.tail.get, rightChain)).listify
-    //case Append(leftAppend, rightChain) => Append(Singleton(leftAppend.head), Append(leftAppend.tail.getOrElse(Singleton(leftAppend.head)), rightChain).listify)
-    //there is always value leftAppend.tail, otherwise leftAppend would be singleton and handled with the previous case 
+    case Append(leftAppend, rightChain) => Append(Singleton(leftAppend.head), Append(leftAppend.tail.get, rightChain).listify)
   }
 }
 
