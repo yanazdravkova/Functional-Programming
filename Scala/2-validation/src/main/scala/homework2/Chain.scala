@@ -72,8 +72,8 @@ case class Append[+A](left: Chain[A], right: Chain[A]) extends Chain[A] {
 object Chain {
   def apply[A](head: A, rest: A*): Chain[A] = {
     rest match {
-      case Seq() => new Singleton(head)
-      case _ => Append(new Singleton(head), Chain(rest.head, rest.tail: _*))
+      case Seq() => Singleton(head)
+      case _ => Append(Singleton(head), Chain(rest.head, rest.tail: _*))
     }
   }
 
