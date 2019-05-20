@@ -14,7 +14,6 @@ class ChainTest extends FlatSpec with Matchers {
   "equals" should "recognize two equal chains" in {
     (Chain(1, 2, 3).equals(Chain(1, 2, 3)) shouldBe true)
   }
-
   it should "recognize two NOT equal chains" in {
     (Chain(1, 2, 5).equals(Chain(4)) shouldBe false)
   }
@@ -30,15 +29,12 @@ class ChainTest extends FlatSpec with Matchers {
   "listify" should "make first element of an append be a singleton" in {
     (Append(Append(Singleton(1), Singleton(2)), Append(Singleton(3), Singleton(4))).listify shouldBe Append(Singleton(1), Append(Singleton(2), Append(Singleton(3), Singleton(4)))))
   }
-
   it should "apply listify on a Singleton" in {
     (Singleton(1).listify shouldBe Singleton(1))
   }
-
   it should "apply listify on Append of two Singletons" in {
     (Append(Singleton(1), Singleton(2)).listify shouldBe Append(Singleton(1), Singleton(2)))
   }
-
   it should "2 leveled append" in {
     (Append(Append(Singleton(1), Singleton(2)), Singleton(3)).listify shouldBe Append(Singleton(1), Append(Singleton(2), Singleton(3))))
   }
@@ -46,11 +42,6 @@ class ChainTest extends FlatSpec with Matchers {
   it should "2 leveled listify" in {
     (Append(Append(Singleton(1), Append(Singleton(2), Singleton(3))), Singleton(4)).listify shouldBe
       Append(Singleton(1), Append(Singleton(2), Append(Singleton(3), Singleton(4)))))
-  }
-
-  it should "SHOULD NOT PASS BUT PASSED  1 leveled listify" in {
-    (Append(Append(Append(Singleton(1), Append(Singleton(2), Singleton(3))), Singleton(4)), Singleton(5)).listify shouldBe
-      Append(Singleton(1), Append(Append(Append(Singleton(2), Singleton(3)), Singleton(4)), Singleton(5))))
   }
   it should "nested append listify" in {
     (Append(Append(Append(Singleton(1), Singleton(2)), Append(Singleton(3), Singleton(4))), Singleton(5)).listify shouldBe
