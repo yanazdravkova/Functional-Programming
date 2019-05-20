@@ -1,15 +1,29 @@
 package homework2
 
 sealed trait Validated[+E, +A] {
-  def isValid: Boolean = ???
+  def isValid: Boolean = this match {
+    case Valid(_) => true
+    case _ => false 
+  }
 
-  def getOrElse[B >: A](default: => B): B = ???
+  def getOrElse[B >: A](default: => B): B = this match {
+    case Valid(a) => a
+    case Invalid(_) => default
+  }
 
-  def orElse[F >: E, B >: A](default: => Validated[F, B]): Validated[F, B] = ???
+  def orElse[F >: E, B >: A](default: => Validated[F, B]): Validated[F, B] = if (this.isValid) this else default 
 
-  def zip[EE >: E, B](vb: Validated[EE, B]): Validated[EE, (A, B)] = ???
+  def zip[EE >: E, B](vb: Validated[EE, B]): Validated[EE, (A, B)] = (this, vb) match {
+    case (Valid(a1), Valid(a2)) => Valid((a1,a2))
+    case (Valid(a1), Invalid(errors)) => Invalid(errors)
+    case (Invalid(errors), Valid(a2)) => Invalid(errors)
+    case (Invalid(errors1), Invalid(errors2)) => Invalid(errors1 ++ errors2)
+  }
 
-  def map[B](f: A => B): Validated[E, B] = ???
+  def map[B](f: A => B): Validated[E, B] = this match {
+    case Valid(a) => Valid(f(a))
+    case i@Invalid(_) => i
+  }
 
   def map2[EE >: E, B, R](vb: Validated[EE, B])(f: (A, B) => R): Validated[EE, R] = ???
 
